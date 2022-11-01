@@ -3,21 +3,43 @@ import { StyleSheet, View, Text } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import axios from "axios";
 import AntDesign from "react-native-vector-icons/AntDesign";
-const data = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
-];
 
 const PassengerGetOnScreen = () => {
   const [value, setValue] = useState(null);
   const [getOnBusHolt, setgetOnBusHolt] = useState("");
   const [getOffBusHolt, setgetOffBusHolt] = useState("");
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const getHolts = async () => {
+      await axios
+        .get(
+          "https://ticketing-backend.azurewebsites.net/api/helper/getHoltsInRote/1"
+        )
+        .then((res) => {
+          if (res.data.status) {
+            temp = [];
+            for (var i = 0; i < res.data.holts.length; i++) {
+              var data = {
+                label: res.data.holts[i].holtName,
+                value: res.data.holts[i].holtId,
+              };
+              temp.push(data);
+            }
+            console.log(temp);
+            setData(temp);
+          } else {
+            console.log(res.data.message);
+          }
+        });
+    };
+    getHolts();
+  }, []);
+
+  //console.log(data);
+
+  // console.log("getOnBusHolt : ", getOnBusHolt);
+  // console.log("getOffBusHolt : ", getOffBusHolt);
 
   const renderItem = (item) => {
     return (
