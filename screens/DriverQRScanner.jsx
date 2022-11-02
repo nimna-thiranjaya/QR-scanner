@@ -15,11 +15,12 @@ export default function DriverQRScanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState("Waiting for QR code");
+  const [QRdata, setQRdata] = useState("");
 
   const navigation = useNavigation();
 
   const UserGetonBtnClick = () => {
-    navigation.navigate("Passenger Get On");
+    navigation.navigate("Passenger Get On", { QRdata });
   };
 
   const userGetoff = () => {
@@ -57,10 +58,16 @@ export default function DriverQRScanner() {
   // What happens when we scan the bar code
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    setText(data);
+    setText("QR code scanned");
+    setQRdata(data);
     console.log("Type: " + type + "\nData: " + data);
   };
 
+  const handleScanAgain = () => {
+    setScanned(false);
+    setText("Waiting for QR code");
+    setQRdata("");
+  };
   // Check permissions and return the screens
   if (hasPermission === null) {
     return (
@@ -91,30 +98,31 @@ export default function DriverQRScanner() {
         />
       </View>
       <Text style={styles.maintext}>Scan Paasenger Smart Card From Here</Text>
-
       <Text style={styles.qrTextStatus}>{text}</Text>
       {scanned && (
-        <Button
-          title={"Scan again?"}
-          onPress={() => setScanned(false)}
-          color="tomato"
-        />
-      )}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={UserGetonBtnClick}
-          style={[styles.button, styles.buttonOutliner]}
-        >
-          <Text style={styles.buttonText}>Get on the Bus</Text>
-        </TouchableOpacity>
+        <View>
+          <Button
+            title={"Scan again?"}
+            onPress={handleScanAgain}
+            color="tomato"
+          />
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={UserGetonBtnClick}
+              style={[styles.button, styles.buttonOutliner]}
+            >
+              <Text style={styles.buttonText}>Get on the Bus</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={userGetoff}
-          style={[styles.button, styles.buttonOutliner]}
-        >
-          <Text style={styles.buttonOutlineText}>Get off the Bus</Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity
+              onPress={userGetoff}
+              style={[styles.button, styles.buttonOutliner]}
+            >
+              <Text style={styles.buttonOutlineText}>Get off the Bus</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
